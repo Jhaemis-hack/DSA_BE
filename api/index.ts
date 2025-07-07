@@ -3,12 +3,12 @@ import express from "express";
 import morgan from "morgan";
 import helmet from "helmet";
 import { StatusCodes } from "http-status-codes";
-import errorHandler from "../utils/errorHandler";
-import authRoutes from "../modules/Auth/auth.routes";
-import menteeRoutes from "../modules/Mentee/mentee.routes";
-import mentorRoutes from "../modules/Mentor/mentor.routes";
-import adminRoutes from "../modules/Admin/admin.routes";
-import DB from "../config/db";
+import errorHandler from "../src/utils/errorHandler";
+import authRoutes from "../src/modules/Auth/auth.routes";
+import menteeRoutes from "../src/modules/Mentee/mentee.routes";
+import mentorRoutes from "../src/modules/Mentor/mentor.routes";
+import adminRoutes from "../src/modules/Admin/admin.routes";
+import DB from "../src/config/db";
 
 const app = express();
 
