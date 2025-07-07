@@ -32,16 +32,21 @@ app.use("/api/v1/admin", adminRoutes);
 
 // Catch-all 404 for API
 app.all("*", (req, res) => {
-  res
-    .status(StatusCodes.NOT_FOUND)
-    .json({
-      status_code: StatusCodes.NOT_FOUND,
-      message: `Cannot ${req.method} ${req.url}`,
-      data: null,
-    });
+  res.status(StatusCodes.NOT_FOUND).json({
+    status_code: StatusCodes.NOT_FOUND,
+    message: `Cannot ${req.method} ${req.url}`,
+    data: null,
+  });
 });
 
 app.use(errorHandler);
+
+// Make sure DB is connected on cold start
+try {
+  DB();
+} catch (err) {
+  console.error("DB connection failed on startup:", err);
+}
 
 // Make sure DB is connected on cold start
 DB();
