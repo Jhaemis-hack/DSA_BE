@@ -48,8 +48,5 @@ try {
   console.error("DB connection failed on startup:", err);
 }
 
-// Make sure DB is connected on cold start
-DB();
-
 // **Export the app as a Vercel Serverless Function handler**
 export default app;
