@@ -2,8 +2,6 @@ import { Request, Response, NextFunction, RequestHandler } from "express";
 import * as jwt from "jsonwebtoken";
 import { EXTENDED_ERROR_BAD_REQUEST, EXTENDED_ERROR_UNATHORIZED } from "../utils/customErrors";
 
-require("@dotenvx/dotenvx").config();
-
 // Extend Express Request interface to include 'user' and 'auth'
 declare global {
   namespace Express {

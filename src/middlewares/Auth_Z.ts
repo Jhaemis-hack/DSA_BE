@@ -2,8 +2,6 @@ import { Request, Response, NextFunction } from "express";
 import * as jwt from "jsonwebtoken";
 import { EXTENDED_ERROR_UNATHORIZED } from "../utils/customErrors";
 
-require("@dotenvx/dotenvx").config();
-
 const user_secret = process.env.JWT_SECRET;
 
 if (!user_secret) {
