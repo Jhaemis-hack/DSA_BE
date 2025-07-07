@@ -1,4 +1,4 @@
-require("@dotenvx/dotenvx").config();
+require("dotenv").config();
 import DB from './config/db';
 import express, { Request, Response, NextFunction } from 'express';
 import morgan from 'morgan';

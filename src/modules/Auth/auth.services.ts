@@ -1,4 +1,4 @@
-require("@dotenvx/dotenvx").config();
+require("dotenv").config();
 import mongoose, { mongo } from "mongoose";
 import {
   create,
