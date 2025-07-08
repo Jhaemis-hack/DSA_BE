@@ -8,11 +8,8 @@ import errorHandler from './utils/errorHandler';
 import AuthRouter from './modules/Auth/auth.routes';
 import MenteeRouter from './modules/Mentee/mentee.routes';
 import MentorRouter from './modules/Mentor/mentor.routes';
-import seedUserIntoDataBase from './modules/seedData/user';
-import seedMenteeProfileIntoDataBase from './modules/seedData/menteeProfile';
-import seedMentorProfileIntoDataBase from './modules/seedData/mentorProfile';
-import availabilitymentorInfoIntoDataBase from './modules/seedData/mentorAvailability';
 import AdminRouter from './modules/Admin/admin.routes';
+import seedDataRouter from './modules/seedData/routes/seedRoutes';
 
 const port = Number(process.env.PORT) || 4040;
 const app = express();
@@ -27,11 +24,6 @@ app.get('/', (req: Request, res: Response) => {
   res.send('Server is up and running. Use /api/v1/*** to consume this API.');
 });
 
-// seedUserIntoDataBase()
-// seedMenteeProfileIntoDataBase()
-// seedMentorProfileIntoDataBase()
-// availabilitymentorInfoIntoDataBase()
-
 app.get('/api/v1', (req: Request, res: Response) => {
   res.send('Welcome to the DSA Project API');
 });
@@ -40,6 +32,7 @@ app.use('/api/v1/auth', AuthRouter);
 app.use('/api/v1/users', MenteeRouter);
 app.use('/api/v1/mentors', MentorRouter);
 app.use('/api/v1/admin', AdminRouter);
+app.use('/api/v1/seed', seedDataRouter);
 
 // handles all application error
 // /{*splat}

@@ -1,7 +1,12 @@
 import bcrypt from "bcrypt";
-import { create, getByEmail } from "../../../helper/mongooseQuery";
-import User from "../../models/user";
-import Profiles from "../../models/profile";
+import { create, getByEmail } from "../../../../helper/mongooseQuery";
+import User from "../../../models/user";
+import Profiles from "../../../models/profile";
+import { Request, Response } from "express";
+
+export const seedMenteeProfileData = async (req: Request, res: Response)=> {
+ await seedMenteeProfileIntoDataBase(menteeProfileData, 0, 20)
+}
 
 const skillGoalMap = {
   skill: [
@@ -20,6 +25,12 @@ const skillGoalMap = {
     ["Human Resource Manager", "Recruiter", "Talent Acquisition Specialist"],
     ["Sales Executive", "Account Manager", "Customer Success Manager"],
     ["Mechanical Engineer", "CAD Designer", "Manufacturing Engineer"],
+    // 16–20:
+    ["UX Researcher", "User Researcher", "Usability Analyst"],
+    ["Cloud Engineer", "AWS Architect", "Kubernetes Administrator"],
+    ["Game Developer", "Gameplay Programmer", "Game Designer"],
+    ["Data Engineer", "Big Data Developer", "ETL Specialist"],
+    ["Technical Writer", "Documentation Specialist", "API Writer"]
   ],
   goals: [
     "To design clean, user-friendly interfaces that millions enjoy using.",
@@ -37,6 +48,12 @@ const skillGoalMap = {
     "To foster a positive work culture and recruit top industry talent.",
     "To exceed sales targets while ensuring clients derive value continuously.",
     "To design efficient mechanical systems that improve daily life technology.",
+    // 16–20:
+    "To uncover user needs and insights that drive intuitive product experiences.",
+    "To architect robust cloud environments that scale and perform under any load.",
+    "To build engaging game mechanics that captivate players worldwide.",
+    "To engineer reliable data pipelines that power analytics at scale.",
+    "To craft clear, concise documentation that empowers developers and users."
   ],
   bio: [
     "A passionate frontend craftsman focused on bringing design to life with modern web technologies.",
@@ -54,7 +71,13 @@ const skillGoalMap = {
     "A people-first HR professional shaping inclusive, high-performing workplaces.",
     "A persuasive communicator focused on relationship-driven sales and client growth.",
     "An engineer who loves optimizing mechanics for speed, precision, and durability.",
-  ],
+    // 16–20:
+    "A user advocate skilled at turning research data into usable design recommendations.",
+    "A cloud specialist passionate about deploying scalable, fault-tolerant architectures.",
+    "A gamer at heart who codes immersive worlds and unforgettable player experiences.",
+    "A data pipeline expert dedicated to ensuring clean, accessible data for all teams.",
+    "A wordsmith who transforms complex APIs into clear, actionable documentation."
+  ]
 };
 
 const menteeProfileData = async function (idx: number) {
@@ -72,10 +95,13 @@ const menteeProfileData = async function (idx: number) {
   console.log(`created ${idx} profiles into the database.`);
 };
 
-async function seedMenteeProfileIntoDataBase() {
-  for (let x = 15; x > 0; x--) {
-    menteeProfileData(x);
+async function seedMenteeProfileIntoDataBase(
+  param: (x: any) => void,
+  min: number,
+  max: number
+) {
+  for (let x = max; x > min; x--) {
+    param(x);
   }
 }
 
-export default seedMenteeProfileIntoDataBase;
