@@ -1,5 +1,6 @@
+require("dotenv").config();
 import DB from './config/db';
-import express, { Request, Response } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import { StatusCodes } from 'http-status-codes';
@@ -12,11 +13,6 @@ import seedMenteeProfileIntoDataBase from './modules/seedData/menteeProfile';
 import seedMentorProfileIntoDataBase from './modules/seedData/mentorProfile';
 import availabilitymentorInfoIntoDataBase from './modules/seedData/mentorAvailability';
 import AdminRouter from './modules/Admin/admin.routes';
-
-// at the very top of your src/app.ts or api/index.ts
-if (process.env.NODE_ENV !== 'production') {
-  import('dotenv').then(dotenv => dotenv.config());
-}
 
 const port = Number(process.env.PORT) || 4040;
 const app = express();
@@ -47,7 +43,7 @@ app.use('/api/v1/admin', AdminRouter);
 
 // handles all application error
 // /{*splat}
-app.all("*", (req: Request, res: Response) => {
+app.all("/{*splat}", (req: Request, res: Response) => {
   res.status(StatusCodes.NOT_FOUND).json({
     status_code: StatusCodes.NOT_FOUND,
     message: `Server can not ${req.method} ${req.originalUrl}`,
