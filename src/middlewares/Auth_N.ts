@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import * as jwt from "jsonwebtoken";
-import { EXTENDED_ERROR_BAD_REQUEST, EXTENDED_ERROR_UNATHORIZED } from "../utils/customErrors";
+import { EXTENDED_ERROR_UNATHORIZED } from "../utils/customErrors";
 
 // Extend Express Request interface to include 'user' and 'auth'
 declare global {

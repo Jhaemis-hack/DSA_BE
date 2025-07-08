@@ -1,5 +1,9 @@
 // api/index.ts
-require("dotenv").config()
+// at the very top of your src/app.ts or api/index.ts
+if (process.env.NODE_ENV !== 'production') {
+  import('dotenv').then(dotenv => dotenv.config());
+}
+
 import express from "express";
 import morgan from "morgan";
 import helmet from "helmet";
