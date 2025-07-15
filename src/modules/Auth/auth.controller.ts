@@ -1,12 +1,15 @@
 import { Request, Response } from "express";
 import AuthService from "./auth.services";
-import { profileUpdateDto, ResponseType, userLoginDto, userSignUpDto } from "../../../helper/validator";
+import {
+  profileUpdateDto,
+  ResponseType,
+  userLoginDto,
+  userSignUpDto,
+} from "../../../helper/validator";
 import { CONTROLLER_ERROR } from "../../utils/customErrors";
 import { StatusCodes } from "http-status-codes";
 
 const authService = new AuthService();
-
-
 
 export const userLogin = async (req: Request, res: Response) => {
   try {
@@ -16,12 +19,21 @@ export const userLogin = async (req: Request, res: Response) => {
 
     const response: ResponseType = await authService.Login(LoginDto);
 
+    if (response.status_code < 400) {
+      res.cookie("access_token", `${response.data.token}`, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 86_400_000,
+      });
+    }
+
     res.status(response.status_code).json(response);
   } catch (error: any) {
     console.error("userLogin Error:", error.message);
     CONTROLLER_ERROR(res, error);
   }
-} ;
+};
 
 export const userSignUp = async (req: Request, res: Response) => {
   try {
@@ -30,6 +42,15 @@ export const userSignUp = async (req: Request, res: Response) => {
     userSignUpDto.parse(SignUpDto); // Validate the request body
 
     const response: ResponseType = await authService.SignUp(SignUpDto);
+
+    if (response.status_code < 400) {
+      res.cookie("access_token", `${response.data.token}`, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 86_400_000,
+      });
+    }
 
     res.status(response.status_code).json(response);
   } catch (error: any) {
@@ -47,18 +68,21 @@ export const profileUpdate = async (req: Request, res: Response) => {
     const userId = req.auth.id;
     const profId = req.auth.profileId;
 
-    const response: ResponseType = await authService.UpdateProfile(ProfileDto, userId, profId);
+    const response: ResponseType = await authService.UpdateProfile(
+      ProfileDto,
+      userId,
+      profId
+    );
 
     res.status(response.status_code).json(response);
   } catch (error: any) {
-    console.error("profileUpdate Error:",  error.message);
+    console.error("profileUpdate Error:", error.message);
     CONTROLLER_ERROR(res, error);
   }
 };
 
 export const logOut = async (req: Request, res: Response) => {
   try {
-
     const userId = req.auth.id;
 
     req.auth = null; // Clear the auth object
@@ -76,7 +100,7 @@ export const logOut = async (req: Request, res: Response) => {
 
 export const getUser = async (req: Request, res: Response) => {
   try {
-    const userId = req.auth.id;    
+    const userId = req.auth.id;
 
     const response: ResponseType = await authService.obtainUser(userId);
 

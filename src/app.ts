@@ -10,6 +10,8 @@ import MenteeRouter from './modules/Mentee/mentee.routes';
 import MentorRouter from './modules/Mentor/mentor.routes';
 import AdminRouter from './modules/Admin/admin.routes';
 import seedDataRouter from './modules/seedData/routes/seedRoutes';
+import cookieParser from "cookie-parser"
+import cors from "cors"
 
 const port = Number(process.env.PORT) || 4040;
 const app = express();
@@ -17,8 +19,21 @@ const app = express();
 app.use(morgan("dev"));
 app.use(helmet());
 
+app.use(cookieParser())
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+const corsOptions = {
+  origin: ['http://localhost:3000', ],
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'authorization'],
+  credentials: true //sending cookies or auth headers
+};
+
+app.use(cors(corsOptions));
+
+app.options(/.*/, cors(corsOptions));
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Server is up and running. Use /api/v1/*** to consume this API.');
