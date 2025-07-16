@@ -19,7 +19,7 @@ export const userLogin = async (req: Request, res: Response) => {
 
     const response: ResponseType = await authService.Login(LoginDto);
 
-    if (response.status_code < 400) {
+    if (response.status_code < 400) {      
       res.cookie("access_token", `${response.data.token}`, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
