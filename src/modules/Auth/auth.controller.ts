@@ -110,3 +110,20 @@ export const getUser = async (req: Request, res: Response) => {
     CONTROLLER_ERROR(res, error);
   }
 };
+
+export const fetchDetailsOfUser = async (req: Request, res: Response) => {
+  try {
+    const userId = req.auth.profileId;
+    const userRole = req.auth.role;
+
+    const response: ResponseType = await authService.fetchDetails(
+      userId,
+      userRole
+    );
+
+    res.status(response.status_code).json(response);
+  } catch (error: any) {
+    console.error("getUser Error:", error.message);
+    CONTROLLER_ERROR(res, error);
+  }
+};

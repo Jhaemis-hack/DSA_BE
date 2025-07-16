@@ -1,5 +1,5 @@
 import auth_N from "../../middlewares/Auth_N";
-import { getUser, logOut, profileUpdate, userLogin, userSignUp } from "./auth.controller";
+import { fetchDetailsOfUser, getUser, logOut, profileUpdate, userLogin, userSignUp } from "./auth.controller";
 import express from "express";
 
 const AuthRouter = express.Router();
@@ -18,5 +18,7 @@ AuthRouter.get("/logout", auth_N, logOut);
 
 // Profile update route
 AuthRouter.get("/me", auth_N, getUser);
+
+AuthRouter.get("/fulldetails", auth_N, fetchDetailsOfUser);
 
 export default AuthRouter;

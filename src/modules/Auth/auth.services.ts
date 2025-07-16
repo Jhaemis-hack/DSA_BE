@@ -5,6 +5,8 @@ import {
   getByEmail,
   getById,
   getByQuery,
+  getFew,
+  getFewAndPopulate,
   updateById,
 } from "../../../helper/mongooseQuery";
 import {
@@ -24,6 +26,8 @@ import { StatusCodes } from "http-status-codes";
 import Profiles from "../../models/profile";
 import { string } from "zod/v4";
 import mentorProfiles from "../../models/mentorProfile";
+import mentorShipRequest from "../../models/menteeRequest";
+import Sessions from "../../models/session";
 
 interface userType {
   _id: mongoose.Types.ObjectId;
@@ -35,6 +39,8 @@ interface userType {
 export default class AuthService {
   private readonly userRepository = User;
   private readonly profileRepository = Profiles;
+  private readonly mentorshipRepository = mentorShipRequest;
+  private readonly sessionRepository = Sessions;
   private readonly mentorRepository = mentorProfiles;
   private readonly secret = process.env.JWT_SECRET || "defaultsecret";
 
@@ -83,6 +89,7 @@ export default class AuthService {
       message: "Login successful",
       data: {
         email: user.email,
+        role: user.role,
         token: token,
       },
     };
@@ -112,18 +119,27 @@ export default class AuthService {
       throw EXTENDED_ERROR_INTERNAL_SERVER("Failed to create user");
     }
 
-    let profileId:string | null;
+    let profileId: string | null;
 
     if (createdUser.role === "mentee") {
-      profileId = (await create(this.profileRepository, { menteeId: createdUser._id }))._id;
-    } else if (createdUser.role === "mentor"){
-      profileId = (await create(this.mentorRepository, { menteeId: createdUser._id }))._id;
+      profileId = (
+        await create(this.profileRepository, { menteeId: createdUser._id })
+      )._id;
+    } else if (createdUser.role === "mentor") {
+      profileId = (
+        await create(this.mentorRepository, { menteeId: createdUser._id })
+      )._id;
     } else {
       profileId = null;
     }
 
     const token = jwt.sign(
-      { id: createdUser._id, profileId, email: createdUser.email, role: createdUser.role },
+      {
+        id: createdUser._id,
+        profileId,
+        email: createdUser.email,
+        role: createdUser.role,
+      },
       this.secret,
       {
         expiresIn: "1h",
@@ -137,6 +153,7 @@ export default class AuthService {
       data: {
         email: createdUser.email,
         token: token,
+        role: createdUser.role,
       },
     };
   }
@@ -144,7 +161,7 @@ export default class AuthService {
   async UpdateProfile(
     ProfileDto: profileUpdateDto,
     userId: string,
-    profId: string,
+    profId: string
   ): Promise<{ status_code: number; message: string; data: any }> {
     const user = await getByQuery(this.profileRepository, { userId: userId });
 
@@ -154,7 +171,11 @@ export default class AuthService {
       );
     }
 
-    const updateProfile = await updateById(this.profileRepository, profId, ProfileDto);
+    const updateProfile = await updateById(
+      this.profileRepository,
+      profId,
+      ProfileDto
+    );
 
     if (!updateProfile) {
       throw EXTENDED_ERROR_INTERNAL_SERVER("Failed to update profile");
@@ -186,6 +207,71 @@ export default class AuthService {
         email: user.email,
         role: user.role,
       },
+    };
+  }
+
+  async fetchDetails(
+    userId: string,
+    userRole: string
+  ): Promise<{ status_code: number; message: string; data: any }> {
+    let user;
+    if (userRole === "mentee") {
+      user = await getById(this.profileRepository, userId);
+    } else {
+      user = await getById(this.mentorRepository, userId);
+    }
+
+    if (!user) {
+      throw EXTENDED_ERROR_NOT_FOUND("User not found");
+    }
+
+    const userSessionDetails = await getFewAndPopulate(
+      this.sessionRepository,
+      {
+        $or: [{ mentorId: userId }, { menteeId: userId }],
+      },
+      ["mentorId", "menteeId"]
+    );
+
+    const sessionCount: number = await userSessionDetails.reduce(
+      (activeSessions: number, sessions: any) => {
+        if (sessions.status === "scheduled") {
+          activeSessions + 1;
+        }
+      },
+      0
+    );
+
+    const allRatings: number = await userSessionDetails.reduce(
+      (ratings: number, sessions: any) => {
+        if (sessions.rating > 0) {
+          ratings + sessions.rating;
+        }
+      },
+      0
+    );
+
+    const upcomingSessions = userSessionDetails.map((session) => {
+      if (session.status === "scheduled") {
+        return {
+          mentor: session.mentorId.name,
+          mentee: session.menteeId.username,
+          date: session.date,
+        };
+      }
+    });
+
+    const mentorshipDetails = {
+      activeMentorship: sessionCount,
+      averageRating: allRatings / (userSessionDetails.length - sessionCount),
+      upcomingSessions
+    };
+
+    // Add password verification logic here
+    return {
+      status_code: StatusCodes.OK,
+      message: "user's detailed fetched successfully.",
+      data: mentorshipDetails,
     };
   }
 }
