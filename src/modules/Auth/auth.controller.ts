@@ -86,6 +86,7 @@ export const logOut = async (req: Request, res: Response) => {
     const userId = req.auth.id;
 
     req.auth = null; // Clear the auth object
+    res.cookie("access_token", ""); // Clear cookie items
 
     res.status(StatusCodes.OK).json({
       status_code: StatusCodes.OK,
