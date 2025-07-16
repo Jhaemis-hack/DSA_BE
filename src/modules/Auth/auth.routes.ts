@@ -21,4 +21,5 @@ AuthRouter.get("/me", auth_N, getUser);
 
 AuthRouter.get("/fulldetails", auth_N, fetchDetailsOfUser);
 
+
 export default AuthRouter;
