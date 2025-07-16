@@ -22,9 +22,11 @@ import {
   mongoIdType,
 } from "../../../helper/validator";
 import AvailabilitySchema from "../../models/availability";
+import mentorProfiles from "../../models/mentorProfile";
 
 export default class MentorService {
   private readonly profileRepository = Profiles;
+  private readonly mentorProfileRespository = mentorProfiles;
   private readonly userRepository = User;
   private readonly mentorShipRequestRepository = mentorShipRequest;
   private readonly sessionRepository = Sessions;
@@ -236,6 +238,36 @@ export default class MentorService {
         start: updatedAvailablePeriod.startTime,
         end: updatedAvailablePeriod.endTime,
       },
+    };
+  }
+
+  async getMentorProfile(
+    mentorId: string
+  ): Promise<{ status_code: number; message: string; data: any }> {
+    // Logic to get mentee profile by ID
+
+    const profile = await getByQueryAndPopulate(
+      this.mentorProfileRespository,
+      { mentorId: mentorId },
+      ["mentorId"]
+    );
+    if (!profile) {
+      throw EXTENDED_ERROR_NOT_FOUND("Mentee profile not found");
+    }
+
+    const profileData = {
+      _id: profile._id,
+      email: profile.mentorId.email,
+      username: profile.name,
+      skill: profile.skill,
+      industry: profile.industry,
+      role: profile.mentorId.role,
+    };
+
+    return {
+      status_code: StatusCodes.OK,
+      message: "Mentor profile retrieved successfully",
+      data: profileData,
     };
   }
 }

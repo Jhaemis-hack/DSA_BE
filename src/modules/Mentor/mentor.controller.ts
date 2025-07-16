@@ -105,3 +105,17 @@ export const EditSessionAvailability = async (req: Request, res: Response) => {
     CONTROLLER_ERROR(res, error);
   }
 };
+
+export const mentorProfile = async (req: Request, res: Response) => {
+  try {
+    const mentorId = req.auth.id;
+
+    const response: ResponseType = await menteeService.getMentorProfile(mentorId);
+
+    res.status(response.status_code).json(response);
+  } catch (error: any) {
+    console.error("userProfile Error:", error.message);
+    CONTROLLER_ERROR(res, error);
+  }
+};
+

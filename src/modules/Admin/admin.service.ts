@@ -11,14 +11,16 @@ import mentorProfiles from "../../models/mentorProfile";
 import Profiles from "../../models/profile";
 import User from "../../models/user";
 import {
-  EXTENDED_ERROR_BAD_REQUEST,
   EXTENDED_ERROR_INTERNAL_SERVER,
   EXTENDED_ERROR_NOT_FOUND,
 } from "../../utils/customErrors";
-import { adminAssignRoleDto, menteeProfileUpdateDto } from "../../../helper/validator";
+import {
+  adminAssignRoleDto,
+  menteeProfileUpdateDto,
+} from "../../../helper/validator";
 import MenteeService from "../Mentee/mentee.service";
 
-const menteeService = new MenteeService()
+const menteeService = new MenteeService();
 
 interface user {
   menteeId: any;
@@ -90,26 +92,30 @@ export default class AdminService {
     };
   }
 
-  async updateUserRole(userId: any, newRole: adminAssignRoleDto): Promise<{
+  async updateUserRole(
+    userId: any,
+    newRole: adminAssignRoleDto
+  ): Promise<{
     status_code: number;
     message: string;
     data: any;
   }> {
+    const isUser = await getById(this.userRepository, userId);
 
-    const isUser =await getById(this.userRepository, userId);
+    const role: string = newRole.role;
 
-    const role:string = newRole.role;
-
-    if (!isUser){
-        throw EXTENDED_ERROR_NOT_FOUND("user not found!")
+    if (!isUser) {
+      throw EXTENDED_ERROR_NOT_FOUND("user not found!");
     }
 
     isUser.role = role;
 
     const upgradeUser = await updateById(this.userRepository, userId, isUser);
 
-    if (!upgradeUser){
-        throw EXTENDED_ERROR_INTERNAL_SERVER(`Failed to upgrade user with email: ${isUser.email}`)
+    if (!upgradeUser) {
+      throw EXTENDED_ERROR_INTERNAL_SERVER(
+        `Failed to upgrade user with email: ${isUser.email}`
+      );
     }
 
     return {
@@ -118,23 +124,28 @@ export default class AdminService {
       data: {
         _id: upgradeUser._id,
         email: upgradeUser.email,
-        role: upgradeUser.role
+        role: upgradeUser.role,
       },
     };
-  };
+  }
 
-  async editUserDetails(userId: any, editedData: menteeProfileUpdateDto): Promise<{
+  async editUserDetails(
+    userId: any,
+    editedData: menteeProfileUpdateDto
+  ): Promise<{
     status_code: number;
     message: string;
     data: any;
   }> {
-
-    const isupdated = await menteeService.updateMenteeProfile(editedData, userId);
+    const isupdated = await menteeService.updateMenteeProfile(
+      editedData,
+      userId
+    );
 
     return {
       status_code: StatusCodes.OK,
       message: "Users profile updated successfully.",
       data: isupdated,
     };
-  };
+  }
 }
