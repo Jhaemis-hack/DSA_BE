@@ -8,8 +8,8 @@ const availabilitySchema = new mongoose.Schema(
       required: true,
     },
     date: {
-      type: String,
-      default: "",
+      type: Array,
+      default: [],
     },
     startTime: {
       type: String,

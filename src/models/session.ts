@@ -13,7 +13,7 @@ const sessionSchema = new mongoose.Schema(
       required: true,
     },
     date: {
-      type:String
+      type: String,
     },
     feedBack: {
       type: String,
@@ -23,6 +23,7 @@ const sessionSchema = new mongoose.Schema(
       type: Number,
       min: 1,
       max: 5,
+      default: null,
     },
     dateId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -40,3 +41,4 @@ const sessionSchema = new mongoose.Schema(
 
 const Sessions = mongoose.model("sessions", sessionSchema);
 export default Sessions;
+

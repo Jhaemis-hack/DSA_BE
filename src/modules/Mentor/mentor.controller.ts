@@ -1,17 +1,20 @@
 import { Request, Response } from "express";
-import { editAvailbilitykDto, mongoIdType, ResponseType } from "../../../helper/validator";
+import { editAvailbilitykDto, mongoIdType, ResponseType, StatusAction } from "../../../helper/validator";
 import MentorService from "./mentor.service";
 import { CONTROLLER_ERROR } from "../../utils/customErrors";
 import mongoose from "mongoose";
+import MenteeService from "../Mentee/mentee.service";
 
-const menteeService = new MentorService();
+const mentorService = new MentorService();
+const menteeService = new MenteeService();
+
 
 export const viewMentorShipRequests = async (req: Request, res: Response) => {
   try {
     const userId = req.auth.id;
     const profId = req.auth.profileId;
 
-    const response: ResponseType = await menteeService.fetchMenteeRequests(
+    const response: ResponseType = await mentorService.fetchMenteeRequests(
       userId,
       profId
     );
@@ -35,7 +38,7 @@ export const updateStatusRequests = async (req: Request, res: Response) => {
 
     const requestId: mongoIdType = new mongoose.Types.ObjectId(id);
 
-    const response: ResponseType = await menteeService.requestStatusAction(
+    const response: ResponseType = await mentorService.requestStatusAction(
       userId,
       requestId,
       statusAction,
@@ -55,7 +58,7 @@ export const getMenteeSessions = async (req: Request, res: Response) => {
 
     const profId = req.auth.profileId;
 
-    const response: ResponseType = await menteeService.fetchSessions(
+    const response: ResponseType = await mentorService.fetchSessions(
       userId,
       profId
     );
@@ -73,7 +76,7 @@ export const createSession = async (req: Request, res: Response) => {
     const profId = req.auth.profileId;
     const requestId = req.params.reqid;
 
-    const response: ResponseType = await menteeService.sessionCreate(
+    const response: ResponseType = await mentorService.sessionCreate(
       userId,
       profId,
       requestId
@@ -86,6 +89,19 @@ export const createSession = async (req: Request, res: Response) => {
   }
 };
 
+export const getAvailabilityData = async (req: Request, res: Response) => {
+  try {
+    const profId = req.auth.profileId;
+
+    const response: ResponseType = await menteeService.getAvailability(profId)
+
+    res.status(response.status_code).json(response);
+  } catch (error: any) {
+    console.error("EditSessionAvailability Error:", error.message);
+    CONTROLLER_ERROR(res, error);
+  }
+};
+
 export const EditSessionAvailability = async (req: Request, res: Response) => {
   try {
     const profId = req.auth.profileId;
@@ -94,7 +110,7 @@ export const EditSessionAvailability = async (req: Request, res: Response) => {
 
     editAvailbilitykDto.parse(editData)
 
-    const response: ResponseType = await menteeService.editAvailbility(
+    const response: ResponseType = await mentorService.editAvailbility(
       editData,
       profId,
     );
@@ -110,7 +126,7 @@ export const mentorProfile = async (req: Request, res: Response) => {
   try {
     const mentorId = req.auth.id;
 
-    const response: ResponseType = await menteeService.getMentorProfile(mentorId);
+    const response: ResponseType = await mentorService.getMentorProfile(mentorId);
 
     res.status(response.status_code).json(response);
   } catch (error: any) {

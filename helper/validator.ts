@@ -41,7 +41,7 @@ export type menteeProfileUpdateDto = z.infer<typeof menteeProfileUpdateDto>;
 
 
 export const adminAssignRoleDto = z.object({
-  role: z.string().nonempty()
+  nwrole: z.string().nonempty()
 });
 export type adminAssignRoleDto = z.infer<typeof adminAssignRoleDto>;
 
@@ -52,14 +52,14 @@ export const FeedBackDto = z.object({
 export type FeedBackDto = z.infer<typeof FeedBackDto>;
 
 export const editAvailbilitykDto = z.object({
-  date: z.string().optional(),
+  date: z.array(z.string()).optional(),
   startTime: z.string().optional(),
   endTime: z.string().optional(),
 });
 export type editAvailbilitykDto = z.infer<typeof editAvailbilitykDto>;
 
 export const createAvailbilitykDto = z.object({
-  date: z.string().nonempty(),
+  date: z.array(z.string()).nonempty(),
   startTime: z.string().nonempty(),
   endTime: z.string().nonempty(),
 });
@@ -77,3 +77,5 @@ export interface FeedBackPayload {
   feedback: string,
   rating: number,
 }
+
+export type StatusAction = "accepted" | "rejected" | undefined

@@ -26,7 +26,7 @@ app.use(express.urlencoded({ extended: true }));
 
 const corsOptions = {
   origin: ['http://localhost:3000', 'http://localhost:5173'],
-  methods: ['GET', 'POST', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'authorization'],
   credentials: true //sending cookies or auth headers
 };

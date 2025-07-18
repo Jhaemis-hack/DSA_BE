@@ -1,6 +1,6 @@
 import express from "express";
 import auth_N from "../../middlewares/Auth_N";
-import { createSession, EditSessionAvailability, getMenteeSessions, mentorProfile, updateStatusRequests, viewMentorShipRequests } from "./mentor.controller";
+import { getAvailabilityData, EditSessionAvailability, getMenteeSessions, mentorProfile, updateStatusRequests, viewMentorShipRequests } from "./mentor.controller";
 import auth_Z from "../../middlewares/Auth_Z";
 
 const MentorRouter = express.Router();
@@ -21,6 +21,8 @@ MentorRouter.get("/sessions/mentor", auth_N, auth_Z("mentor"), getMenteeSessions
 MentorRouter.put("/available/edit", auth_N, auth_Z("mentor"), EditSessionAvailability);
 
 MentorRouter.get("/me", auth_N, auth_Z("mentor"), mentorProfile);
+
+MentorRouter.get("/available", auth_N, auth_Z("mentor"), getAvailabilityData);
 
 
 export default MentorRouter;

@@ -24,9 +24,7 @@ const auth_N = (req: Request, res: Response, next: NextFunction) => {
     next();
   } else {
     let token = req.headers?.authorization?.split(" ")[1];
-    const cookieToken = req.cookies["access_token"];
-    console.log(cookieToken);
-    
+    const cookieToken = req.cookies["access_token"];    
     
     token = !token ? cookieToken : "";
     

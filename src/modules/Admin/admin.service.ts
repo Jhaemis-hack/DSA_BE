@@ -23,6 +23,7 @@ import MenteeService from "../Mentee/mentee.service";
 const menteeService = new MenteeService();
 
 interface user {
+  _id: string;
   menteeId: any;
   email: string;
   username: string;
@@ -63,6 +64,7 @@ export default class AdminService {
     }
 
     const menteeCategory = await menteeList.map((user) => ({
+      id: user.menteeId._id,
       name: user.username,
       email: user.menteeId.email,
       bio: user.bio,
@@ -72,6 +74,7 @@ export default class AdminService {
     }));
 
     const mentorCategory = await mentorList.map((mentor) => ({
+      id: mentor.mentorId._id,
       name: mentor.name,
       email: mentor.mentorId.email,
       bio: mentor.bio,
@@ -94,7 +97,7 @@ export default class AdminService {
 
   async updateUserRole(
     userId: any,
-    newRole: adminAssignRoleDto
+    newRole: string,
   ): Promise<{
     status_code: number;
     message: string;
@@ -102,7 +105,7 @@ export default class AdminService {
   }> {
     const isUser = await getById(this.userRepository, userId);
 
-    const role: string = newRole.role;
+    const role: string = newRole;
 
     if (!isUser) {
       throw EXTENDED_ERROR_NOT_FOUND("user not found!");

@@ -54,15 +54,20 @@ export default class MentorService {
       throw EXTENDED_ERROR_NOT_FOUND("No mentorship request found.");
     }
 
-    const dataDetails = menteeRequests.map((request) => ({
-      _id: request._id,
-      menteeId: request.menteeId._id,
-      name: request.menteeId.username,
-      bio: request.menteeId.bio,
-      skill: request.menteeId.skill,
-      goals: request.menteeId.goals,
-      status: request.status,
-    }));
+    const dataDetails = menteeRequests.map((request) => {
+      if (request.status === "accepted" || request.status === "rejected") {
+        return;
+      }
+      return {
+        _id: request._id,
+        menteeId: request.menteeId._id,
+        name: request.menteeId.username,
+        bio: request.menteeId.bio,
+        skill: request.menteeId.skill,
+        goals: request.menteeId.goals,
+        status: request.status,
+      };
+    });
 
     return {
       status_code: StatusCodes.OK,
@@ -124,22 +129,35 @@ export default class MentorService {
       throw EXTENDED_ERROR_NOT_FOUND("User not found.");
     }
 
-    const Sessions = await getByQueryAndPopulate(
+    const Sessions = await getFewAndPopulate(
       this.sessionRepository,
       {
         mentorId: profId,
       },
-      ["dateId"]
+      ["dateId", "mentorId", "menteeId"]
     );
 
-    if (Sessions < 1) {
+    if (Sessions.length < 1) {
       throw EXTENDED_ERROR_NOT_FOUND("No session available yet.");
     }
+
+    const dataDetails = Sessions.map((session) => ({
+      id: session._id,
+      name: session.menteeId.username,
+      skill: session.menteeId.skill,
+      industry: session.mentorId.industry,
+      sessionStatus: session.status,
+      feedback: session.feedBack,
+      rating: session.rating,
+      date: session.dateId.date,
+      start: session.dateId.startTime,
+      end: session.dateId.endTime,
+    }));    
 
     return {
       status_code: StatusCodes.OK,
       message: `Sessions fetched successfully`,
-      data: Sessions,
+      data: dataDetails,
     };
   }
 
@@ -194,7 +212,9 @@ export default class MentorService {
     editData: editAvailbilitykDto,
     profId: string
   ): Promise<{ status_code: number; message: string; data: any }> {
-    const availablePeriod = await getById(this.availabilityRepository, profId);
+    const availablePeriod = await getByQuery(this.availabilityRepository, {
+      mentorId: profId,
+    });
 
     if (!availablePeriod) {
       createAvailbilitykDto.parse(editData);
