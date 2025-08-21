@@ -33,6 +33,19 @@ export const getRecommendedMentors = async (req: Request, res: Response) => {
   }
 };
 
+export const fetchMentors = async (req: Request, res: Response) => {
+  try {
+    const { skill, industry } = req.query;
+
+    const response = await menteeService.fetchAllMentors();
+
+    res.status(response.status_code).json(response);
+  } catch (error: any) {
+    console.error("fetchAllMentors Error:", error.message);
+    CONTROLLER_ERROR(res, error);
+  }
+};
+
 
 export const userProfile = async (req: Request, res: Response) => {
   try {
@@ -159,7 +172,7 @@ export const getMenteeMontorshipRequest = async (
 ) => {
   try {
     const menteeId = req.auth.id;
-    const profId = req.auth.profileId;
+    const profId = req.auth.profileId;    
 
     const response: ResponseType = await menteeService.fetchMentorShipRequests(
       menteeId,

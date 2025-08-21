@@ -22,8 +22,8 @@ export const userLogin = async (req: Request, res: Response) => {
     if (response.status_code < 400) {      
       res.cookie("access_token", `${response.data.token}`, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        secure: true,
+        sameSite: "none",
         maxAge: 86_400_000,
       });
     }
@@ -46,8 +46,8 @@ export const userSignUp = async (req: Request, res: Response) => {
     if (response.status_code < 400) {
       res.cookie("access_token", `${response.data.token}`, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        secure: true,
+        sameSite: "none",
         maxAge: 86_400_000,
       });
     }
@@ -101,7 +101,7 @@ export const logOut = async (req: Request, res: Response) => {
 
 export const getUser = async (req: Request, res: Response) => {
   try {
-    const userId = req.auth.id;
+    const userId = req.auth.id;    
 
     const response: ResponseType = await authService.obtainUser(userId);
 

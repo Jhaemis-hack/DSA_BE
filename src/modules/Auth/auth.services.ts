@@ -192,7 +192,7 @@ export default class AuthService {
   async obtainUser(
     userId: string
   ): Promise<{ status_code: number; message: string; data: any }> {
-    const user = await getById(this.userRepository, userId);
+    const user = await getById(this.userRepository, userId);    
 
     if (!user) {
       throw EXTENDED_ERROR_NOT_FOUND("User not found");
@@ -235,35 +235,49 @@ export default class AuthService {
 
     const sessionCount: number = await userSessionDetails.reduce(
       (activeSessions: number, sessions: any) => {
-        if (sessions.status === "scheduled") {
-          activeSessions + 1;
+        if (sessions.status === "scheduled") {  
+          return activeSessions = activeSessions + 1;          
         }
+        return activeSessions;
       },
       0
-    );
+    );    
+
+    const completedSessionCount: number = await userSessionDetails.reduce(
+      (completedSessions: number, sessions: any) => {
+        if (sessions.status === "completed") {  
+          return completedSessions = completedSessions + 1;          
+        }
+        return completedSessions;
+      },
+      0
+    );    
 
     const allRatings: number = await userSessionDetails.reduce(
       (ratings: number, sessions: any) => {
         if (sessions.rating > 0) {
-          ratings + sessions.rating;
+          return ratings + sessions.rating;
         }
       },
       0
-    );
+    );    
 
     const upcomingSessions = userSessionDetails.map((session) => {
       if (session.status === "scheduled") {
         return {
+          id: session._id,
           mentor: session.mentorId.name,
+          industry: session.mentorId.industry,
           mentee: session.menteeId.username,
           date: session.date,
         };
       }
-    });
-
+    });  
+        
     const mentorshipDetails = {
+      TotalSessions: userSessionDetails.length,
       activeMentorship: sessionCount,
-      averageRating: allRatings / (userSessionDetails.length - sessionCount),
+      averageRating: completedSessionCount < 1 ? allRatings : allRatings / completedSessionCount,
       upcomingSessions
     };
 

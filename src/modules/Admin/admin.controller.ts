@@ -6,7 +6,7 @@ import {
   ResponseType,
   userSignUpDto,
 } from "../../../helper/validator";
-import { CONTROLLER_ERROR } from "../../utils/customErrors";
+import { CONTROLLER_ERROR, EXTENDED_ERROR_BAD_REQUEST } from "../../utils/customErrors";
 import AdminService from "./admin.service";
 import mongoose from "mongoose";
 import AuthService from "../Auth/auth.services";
@@ -31,15 +31,11 @@ export const upgradeRole = async (req: Request, res: Response) => {
 
     const userId: mongoIdType = new mongoose.Types.ObjectId(id);
 
-    const adminId = req.auth.id;
-
-    const assignedRole: adminAssignRoleDto = req.body;
-
-    adminAssignRoleDto.parse(assignedRole);
+    const assignedRoleRaw = req.query.nwrole;
 
     const response: ResponseType = await adminService.updateUserRole(
       userId,
-      assignedRole
+      assignedRoleRaw as string
     );
 
     res.status(response.status_code).json(response);

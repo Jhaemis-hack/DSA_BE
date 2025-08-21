@@ -2,6 +2,7 @@
 import express from "express";
 import {
   bookMentorSession,
+  fetchMentors,
   getMenteeMontorshipRequest,
   getMentorAvailability,
   getRecommendedMentors,
@@ -29,6 +30,8 @@ MenteeRouter.patch("/me/profile", auth_N, menteeProfileUpdate);
 // /mentees/recommendations?skill=JavaScript&industry=Tech
 // Update own profile (bio, skills, goals)
 MenteeRouter.get("/", auth_N, getRecommendedMentors);
+
+MenteeRouter.get("/mentors/all", auth_N, fetchMentors);
 
 // Mentee sends a mentorship request to a mentor
 MenteeRouter.post("/requests/:id", auth_N, menteeMentorRequest);
